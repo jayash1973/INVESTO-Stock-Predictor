@@ -10,4 +10,13 @@ tensorflow
 flask
 flask_cors
 gunicorn
+plotly
+statsmodels
+streamlit
+xgboost
+pmdarima
+lightgbm
+requests
+beautifulsoup4
+ta
 -e .
