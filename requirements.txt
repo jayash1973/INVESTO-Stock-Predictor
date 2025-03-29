@@ -1,0 +1,13 @@
+pandas
+numpy
+seaborn
+matplotlib
+scikit-learn
+yfinance
+pandas_ta
+keras
+tensorflow
+flask
+flask_cors
+gunicorn
+-e .
