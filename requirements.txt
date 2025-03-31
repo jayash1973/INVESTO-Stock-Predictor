@@ -19,4 +19,10 @@ lightgbm
 requests
 beautifulsoup4
 ta
+matplotlib
+ipykernel
+ipython
+jupyter
+jupyterlab
+ta-lib
 -e .
