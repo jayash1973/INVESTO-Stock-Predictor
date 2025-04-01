@@ -1,6 +1,6 @@
 # 📈 INVESTO - AI-Powered Stock Prediction Platform
 
-![INVESTO Logo](docs\images\logo.jfif)  
+![INVESTO Logo](docs/images/logo.jfif)  
 *Professional-grade quantitative trading analytics powered by machine learning*
 
 ## 🚀 Overview
@@ -30,7 +30,7 @@ Prototype Built for traders, analysts, and quantitative researchers to make data
 *Real-time candlestick charts with overlay indicators*
 
 ### Model Performance Comparison
-![Model Comparison](docs\images\model_comparision.png)
+![Model Comparison](docs/images/model_comparision.png)
 *RMSE, MAE, and R² metrics across all models*
 
 ### Prediction Consensus
@@ -135,7 +135,7 @@ streamlit run app.py
 ## 📚 EDA Insights
 
 ### Feature Importance
-![Feature Importance](docs\images\freature_importance.png)
+![Feature Importance](docs/images/freature_importance.png)
 *Top predictive features across models*
 
 
