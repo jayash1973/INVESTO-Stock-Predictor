@@ -8,7 +8,7 @@
 INVESTO is an advanced stock prediction system that combines:
 - **Time Series Forecasting** (ARIMA, SARIMAX)
 - **Ensemble Machine Learning** (Gradient Boosting, XGBoost, LightGBM)
-- **Technical Analysis Indicators** (50+ features)
+- **Technical Analysis Indicators** (32+ features)
 - **Interactive Visualization**
 
 Prototype Built for traders, analysts, and quantitative researchers to make data-driven investment decisions.
