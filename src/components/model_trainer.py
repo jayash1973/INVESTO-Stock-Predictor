@@ -1241,19 +1241,11 @@ class ModelTrainer:
             # Train ARIMA model
             logging.info("\nTraining ARIMA model...")
             arima_results = self.train_arima_model(ticker, data_dict)
-            if arima_results and 'metrics' in arima_results and 'RMSE' in arima_results['metrics']:
-                arima_rmse = arima_results['metrics']['RMSE']
-            else:
-                arima_rmse = float('inf')
             results['arima'] = arima_results
             
             # Train SARIMAX model
             logging.info("\nTraining SARIMAX model...")
             sarimax_results = self.train_sarimax_model(ticker, data_dict)
-            if sarimax_results and 'metrics' in sarimax_results and 'RMSE' in sarimax_results['metrics']:
-                sarimax_rmse = sarimax_results['metrics']['RMSE']
-            else:
-                sarimax_rmse = float('inf')
             results['sarimax'] = sarimax_results
             
             # Train Gradient Boosting
@@ -1275,9 +1267,32 @@ class ModelTrainer:
             saved_paths = self.save_models(ticker, results, artifacts_path)
             results['saved_model_paths'] = saved_paths
             
+            # Save metrics to training_results.pkl
+            training_results_path = os.path.join(artifacts_path, "training_results.pkl")
+            try:
+                if os.path.exists(training_results_path):
+                    with open(training_results_path, 'rb') as f:
+                        training_results = pickle.load(f)
+                else:
+                    training_results = {}
+                
+                training_results[ticker] = {
+                    'arima': arima_results.get('metrics', {}),
+                    'sarimax': sarimax_results.get('metrics', {}),
+                    'gb': gb_results.get('test_metrics', {}),
+                    'xgb': xgb_results.get('test_metrics', {}),
+                    'lgb': lgb_results.get('test_metrics', {})
+                }
+                
+                with open(training_results_path, 'wb') as f:
+                    pickle.dump(training_results, f)
+                logging.info(f"Saved training results to {training_results_path}")
+            
+            except Exception as e:
+                logging.error(f"Error saving training results: {str(e)}")
             
             return results
-        
+            
         except Exception as e:
             logging.error(f"Error in model training initiation for {ticker}: {str(e)}")
             raise CustomException(e, sys)

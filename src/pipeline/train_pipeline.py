@@ -63,7 +63,7 @@ if __name__ == "__main__":
             if 'arima' in ticker_results and 'metrics' in ticker_results['arima']:
                 logging.info(f"ARIMA RMSE: {ticker_results['arima']['metrics']['RMSE']:.4f}")
             if 'sarimax' in ticker_results and 'metrics' in ticker_results['sarimax']:
-                logging.info(f"SARIMAX RMSE: {ticker_results['sarimax']['metrics']['RMSE']:.4f}")  # Fixed to reference 'sarimax'
+                logging.info(f"SARIMAX RMSE: {ticker_results['sarimax']['metrics']['RMSE']:.4f}")
             if 'gb' in ticker_results and 'test_metrics' in ticker_results['gb']:
                 logging.info(f"Gradient Boosting RMSE: {ticker_results['gb']['test_metrics']['RMSE']:.4f}")
             if 'xgb' in ticker_results and 'test_metrics' in ticker_results['xgb']:
