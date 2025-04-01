@@ -14,7 +14,6 @@ plotly
 statsmodels
 streamlit
 xgboost
-pmdarima
 lightgbm
 requests
 beautifulsoup4
@@ -24,5 +23,4 @@ ipykernel
 ipython
 jupyter
 jupyterlab
-ta-lib
 -e .

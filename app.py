@@ -147,11 +147,13 @@ st.markdown("""
 
 # Load logo and training results
 @st.cache_data
-def load_artifacts():
-    logo_path = 'assets/logo.png'
+# Load logo and training results
+@st.cache_data
+def load_training_results_and_logo():
+    logo_path = 'docs/images/logo.jfif'
     training_results_path = 'artifacts/training_results.pkl'
     
-    # Create dummy logo if not found
+    # Check if the logo file exists
     if not os.path.exists(logo_path):
         # Create a blank image as placeholder
         try:
@@ -173,47 +175,21 @@ def load_artifacts():
         except:
             logo = None
     
-    # Create dummy training results if not found
-    if not os.path.exists(training_results_path):
-        # Mock training results for demonstration
-        training_results = {}
-        available_tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX']
-        
-        for ticker in available_tickers:
-            # Create mock metrics
-            model_metrics = {}
-            for model in ['GB', 'XGB', 'LGB']:
-                model_metrics[model] = {
-                    'test_metrics': {
-                        'RMSE': np.random.uniform(0.01, 0.05),
-                        'MAE': np.random.uniform(0.005, 0.03),
-                        'R2': np.random.uniform(0.7, 0.95)
-                    }
-                }
-                
-                # Create mock feature importance
-                if model == 'GB':
-                    features = ['Close', 'Volume', 'SMA_50', 'SMA_200', 'RSI', 
-                              'MACD', 'Upper_Band', 'Lower_Band', 'EMA_20', 'Signal_Line']
-                    importance_values = np.random.uniform(0.01, 0.20, size=len(features))
-                    importance_values = importance_values / importance_values.sum()
-                    
-                    model_metrics[model]['feature_importance'] = pd.DataFrame({
-                        'Feature': features,
-                        'Importance': importance_values
-                    }).sort_values(by='Importance', ascending=False)
-            
-            training_results[ticker] = model_metrics
-    else:
+    # Load actual training results from the pickle file
+    if os.path.exists(training_results_path):
         try:
             with open(training_results_path, 'rb') as f:
                 training_results = pickle.load(f)
-        except:
+        except Exception as e:
+            st.warning(f"Failed to load training results: {str(e)}")
             training_results = {}
+    else:
+        st.warning("Training results file not found.")
+        training_results = {}
     
     return logo, training_results
 
-logo, training_results = load_artifacts()
+logo, training_results = load_training_results_and_logo()
 
 def compute_rsi(series, window=14):
     """Compute the Relative Strength Index (RSI) for a given series."""
@@ -1043,17 +1019,21 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# The problem is here - you have nested st.button calls with the same key
-# Remove the nested button and just use one button
+
 if st.button("Generate Predictions", key="predict_button"):
     if selected_ticker != 'AAPL':
         st.error("Predictions are currently only available for Apple Inc. (AAPL). Please select AAPL from the sidebar.")
     else:
         with st.spinner("Running quantitative models..."):
             try:
-                # Initialize the PredictPipeline with the selected ticker
-                predictor = PredictPipeline(ticker=selected_ticker)
+                # Initialize the PredictPipeline with the selected ticker and forecast days
+                predictor = PredictPipeline(ticker=selected_ticker, forecast_days=forecast_days)
                 predictions = predictor.predict()  # Get real predictions
+                
+                # Get today's date and calculate the prediction date
+                today = datetime.today()
+                prediction_date = today + timedelta(days=forecast_days)
+                formatted_prediction_date = prediction_date.strftime("%Y-%m-%d")  # Format the date
                 
                 # Display predictions
                 cols = st.columns(5)
@@ -1071,8 +1051,8 @@ if st.button("Generate Predictions", key="predict_button"):
                             <div class="model-card">
                                 <h4 style="color: {model_colors[model]};">{model}</h4>
                                 <h3>${data['prediction']:,.2f}</h3>
-                                <p style="color: {'#2ecc71' if change >=0 else '#e74c3c'};">{'▲' if change >=0 else '▼'} {abs(change):.2f}%</p>
-                                <small>{data['date']}</small>
+                                <p style="color: {'#2ecc71' if change >=0 else '#e74c3e'};">{'▲' if change >=0 else '▼'} {abs(change):.2f}%</p>
+                                <small>Prediction Date: {formatted_prediction_date}</small>  <!-- Updated date display -->
                             </div>
                             """, unsafe_allow_html=True)
                             prediction_values.append(data['prediction'])

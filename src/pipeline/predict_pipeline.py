@@ -8,14 +8,15 @@ from src.logger import logging
 from src.utils import load_object
 
 class PredictPipeline:
-    def __init__(self, ticker: str = "AAPL"):
+    def __init__(self, ticker: str = "AAPL", forecast_days: int = 1):
         self.ticker = ticker
+        self.forecast_days = forecast_days  # Store the forecast_days
         self.artifacts_dir = "artifacts"
         self.models: Dict[str, Any] = {}
         self.scaler = None
-        self.engineered_data = None
+        self.engineered_data = None  # Store engineered data
         self.training_features = None  # Store feature names from training
-        logging.info(f"Initialized PredictPipeline for {self.ticker}")
+        logging.info(f"Initialized PredictPipeline for {self.ticker} with forecast days: {self.forecast_days}")
 
     def load_artifacts(self):
         """Load all required artifacts for prediction"""
@@ -96,20 +97,20 @@ class PredictPipeline:
             # Time series models predictions
             if 'arima' in self.models:
                 try:
-                    arima_forecast = self.models['arima'].forecast(steps=1)
+                    arima_forecast = self.models['arima'].forecast(steps=self.forecast_days)  # Use forecast_days
                     predictions['ARIMA'] = {
                         'date': latest_date_str,
-                        'prediction': round(arima_forecast[0], 2)
+                        'prediction': round(arima_forecast[-1], 2)  # Get the last forecasted value
                     }
                 except Exception as e:
                     logging.warning(f"ARIMA prediction failed: {str(e)}")
 
             if 'sarimax' in self.models:
                 try:
-                    sarimax_forecast = self.models['sarimax'].forecast(steps=1)
+                    sarimax_forecast = self.models['sarimax'].forecast(steps=self.forecast_days)  # Use forecast_days
                     predictions['SARIMAX'] = {
                         'date': latest_date_str,
-                        'prediction': round(sarimax_forecast[0], 2)
+                        'prediction': round(sarimax_forecast[-1], 2)  # Get the last forecasted value
                     }
                 except Exception as e:
                     logging.warning(f"SARIMAX prediction failed: {str(e)}")
@@ -122,7 +123,7 @@ class PredictPipeline:
                         pred = self.models[model_type].predict(features['tree_features'])
                         predictions[model_name] = {
                             'date': latest_date_str,
-                            'prediction': round(pred[0], 2)
+                            'prediction': round(pred[0], 2)  # Assuming single prediction for tree-based models
                         }
                     except Exception as e:
                         logging.warning(f"{model_name} prediction failed: {str(e)}")
